@@ -1,4 +1,3 @@
-#Go back through and change the errors
 mail_var = "MAIL"
 from_var = "FROM:"
 space = " "
