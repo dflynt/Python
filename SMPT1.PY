@@ -1,3 +1,4 @@
+#I chose to throw errors for all future MAIL FROM: commands after one has already been entered.
 mail_var = "MAIL"
 from_var = "FROM:"
 space = " "
@@ -164,62 +165,71 @@ sender = ""
 receiver = ""
 emailAddressList = [];
 fileToWriteList = [];
-while True:	
-	if input[0] == 'M':
-		i = check_MailFrom(mail_var, from_var, input)
-		if i != -1:
-			mailfrom = check_Path(mail_var, from_var, input, i)
-			if mailfrom != -1:
-				if sender == "":
-					sender = mailfrom
-				else:
-					print "503 Bad sequence of commands"
-					
-		input = raw_input()	
-	elif input[0] == 'R': 
-		if sender == "":
-			print "503 Bad sequence of commands"
-		i = check_RCPT(rcpt_var, input)
-		if i != -1:
-			receiver = check_Path(mail_var, from_var, input, i)
-			if receiver != -1:
-				emailAddressList.append(receiver)
-		input = raw_input()
-	elif input[0] == 'D':
-		if sender == "" or receiver == "":
-			print "503 Bad sequence of commands"
-			#bad input so take in another line and reiterate through the loop to parse what was just typed
+while True:
+	try:
+		if input[0] == 'M':
+			if sender == "":
+				i = check_MailFrom(mail_var, from_var, input)
+				if i != -1:
+					mailfrom = check_Path(mail_var, from_var, input, i)
+					if mailfrom != -1:
+						sender = mailfrom	
+						input = raw_input()
+						continue
+			else:
+				print "503 Bad sequence of commands"	
+				input = raw_input()	
+		elif input[0] == 'R': 
+			if sender == "":
+				print "503 Bad sequence of commands"
+			else:
+				i = check_RCPT(rcpt_var, input)
+				if i != -1:
+					receiver = check_Path(mail_var, from_var, input, i)
+					if receiver != -1:
+						emailAddressList.append(receiver)
 			input = raw_input()
-			continue
-		i = check_Data(data_var, input)
-		if i != -1:
-			print "354 Start mail input; end with <CLRF>.<CLRF>"
-			#file creation
-			for f in range(len(emailAddressList)):
-				fileName = 'forward/' + emailAddressList[f]
-				file = open(fileName, 'w')
-				#add file object to 'mailing list'
-				fileToWriteList.append(file)
-		if sender != "":
-			#append 'From: <' and 'To: 'tags
-			for f in range(len(fileToWriteList)):
-				fileToWriteList[f].write("From: <" + sender + ">\n")
-				for emailAdd in range(len(emailAddressList)):
-					fileToWriteList[f].write("To: <" + emailAddressList[emailAdd] + ">\n")
-		message = raw_input()
-		while message!= '.':
-			print message
-			for f in range(len(fileToWriteList)):
-				fileToWriteList[f].write(message + '\n')
+		elif input[0] == 'D':
+			if sender == "" or receiver == "":
+				print "503 Bad sequence of commands"
+				#bad input so take in another line and
+				#reiterate through the loop to parse what was just typed
+				input = raw_input()
+				continue
+			i = check_Data(data_var, input)
+			if i != -1:
+				print "354 Start mail input; end with <CLRF>.<CLRF>"
+				#file creation
+				for f in range(len(emailAddressList)):
+					fileName = 'forward/' + emailAddressList[f]
+					file = open(fileName, 'w')
+					#add file object to 'mailing list'
+					fileToWriteList.append(file)
+			elif i == -1:
+                                input = raw_input()
+                                continue
+			if sender != "" and receiver != "":
+				#append 'From: <' and 'To: 'tags to each file
+				for f in range(len(fileToWriteList)):
+					fileToWriteList[f].write("From: <" + sender + ">\n")
+					for emailAdd in range(len(emailAddressList)):
+						fileToWriteList[f].write("To: <" + emailAddressList[emailAdd] + ">\n")
 			message = raw_input()
-		print "250 ok"
-		#Once the program breaks out of while loop
-		#reset all variables to have new a new sender and receivers.
-		sender = ""
-		receiver = ""
-		del emailAddressList[:]
-		del fileToWriteList[:]
-		input = raw_input()
-	else:
-		print "500 Syntax error: command unrecognized"
-		input = raw_input()
+			while message!= '.':
+				print message
+				for f in range(len(fileToWriteList)):
+					fileToWriteList[f].write(message + '\n')
+				message = raw_input()
+			print "250 ok"
+			#Once the program breaks out of while loop
+			#reset all variables to have a new sender and receivers.
+			sender = ""
+			receiver = ""
+			del emailAddressList[:]
+			del fileToWriteList[:]
+			input = raw_input()
+		else:
+			print "500 Syntax error: command unrecognized"
+			input = raw_input()
+	except:
+		break
