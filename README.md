@@ -1,2 +1,2 @@
-# Python_Scripts
+# Python Scripts
 This repository is used for scripts made in Internet Services and Protocols at UNC
