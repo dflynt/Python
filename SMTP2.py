@@ -14,9 +14,9 @@ def main():
 	for line in f:
 		if line[0:5] == "From:":
 			if dataSequence == True:
-				#if we get a From: line while dataSequence is true
+				#if we get a From: line while dataSequence is True
 				#that must mean that a new message is starting
-				#reset all variable and begin parsing new message
+				#set variable to False and begin parsing new message
 				dataSequence = False
 				print "."
 				input = raw_input()
