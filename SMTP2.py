@@ -3,6 +3,9 @@ Author: Daniel Flynt
 Last edited: October 3, 2016 11:38AM
 Description: Parsing program that reads an email file
 and outputs the proper SMTP commands until the EOF
+Bug: If the very last message doesn't have a message body, only
+a sender and receiver, then the script will not print DATA and ask
+for a 354 code.
 '''
 import sys
 def main():
