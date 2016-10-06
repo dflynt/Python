@@ -1,6 +1,6 @@
 '''
 Author: Daniel Flynt
-Last edited: October 3, 2016 11:38AM     #wowwhatarush
+Last edited: October 3, 2016 11:38AM
 Description: Parsing program that reads an email file
 and outputs the proper SMTP commands until the EOF
 '''
